@@ -1,0 +1,29 @@
+#include "CurieIMU.h"
+void setup() {
+  Serial.begin(9600); // инициализируем последовательную коммуникацию
+  while (!Serial);    // ждем открытия последовательного порта 
+  // инициализируем IMU-устройство:
+  Serial.println("Initializing IMU device...");  //  "Инициализация IMU-устройства..."
+  CurieIMU.begin();
+  // задаем диапазон акселерометра на 2G:
+  CurieIMU.setAccelerometerRange(2);
+}
+void loop() {
+  int axRaw, ayRaw, azRaw;         // «сырые» значения акселерометра
+  float ax, ay, az;
+  CurieIMU.readAccelerometer(axRaw, ayRaw, azRaw);
+  ax = convertRawAcceleration(axRaw);
+  ay = convertRawAcceleration(ayRaw);
+  az = convertRawAcceleration(azRaw);
+  Serial.print("a:\t");
+  Serial.print(ax);
+  Serial.print("\t");
+  Serial.print(ay);
+  Serial.print("\t");
+  Serial.print(az);
+ Serial.println();
+float convertRawAcceleration(int aRaw) {
+float a = (aRaw * 2.0) / 32768.0;
+return a;
+}
+
