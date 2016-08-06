@@ -1,0 +1,117 @@
+#include "CurieIMU.h"
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(4, 5, 10, 11, 12, 13);
+int butt;
+int kol = 0;
+char a;
+int x = 0;
+float time1;
+float acel;
+float current, prev;
+float time2;
+int counter = -1;
+
+#define BUTTON 3 
+
+void setup() {
+  lcd.begin(16, 2); //готовим дисплей к работе
+  lcd.print("100");
+  delay(100);
+  lcd.clear();
+  
+  Serial.begin(9600); //"готовим" Serial-вывод и гироскоп к работе
+  while (!Serial);   
+  Serial.println("Initializing IMU device..."); 
+  
+  CurieIMU.begin();
+  CurieIMU.setGyroRange(250);
+
+}
+int cnt = 0;
+void loop() {
+  digitalWrite(2, HIGH);
+  lcd.begin(16, 2);
+  //начало части с кнопкой
+  /*butt = digitalRead(BUTTON);
+  Serial.print("butt = ");
+  Serial.println(butt);*/
+  /*if (butt == 0)
+  {
+      //Serial.print("butt=");
+      //Serial.println(butt);
+      x = (x+1)%2;
+      Serial.print("x=");
+      Serial.println(x);
+
+      if (x == 1) {
+        digitalWrite(2, HIGH);
+          lcd.begin(16, 2);
+        lcd.print("Wait...");
+        delay(750);
+        lcd.clear();
+      
+      } else {
+        
+    lcd.clear();
+         lcd.print("OFF...");
+    delay(750);
+        digitalWrite(2, LOW);
+        Serial.print("BUTTON OFF");
+      }
+       delay(2000);   
+  }*/
+  //наверху часть с кнопкой
+
+  //if (x == 1){
+    cnt++;
+    delay(100);
+
+    int gxRaw, gyRaw, gzRaw;         // переменные для «сырых» значений от гироскопа
+    CurieIMU.readGyro(gxRaw, gyRaw, gzRaw); //измеряем по оси x,y,z
+    Serial.print("g:\t"); //выводим на компьютер
+    Serial.print(gzRaw);
+    delay(100);
+    Serial.println();
+    
+    time1 = millis();
+    if ((gzRaw < 8000) && (gzRaw>4000))
+    {
+      counter++;
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.println("Wow!You'r not so");
+      lcd.setCursor(0, 1);
+      lcd.print("bad ");
+      lcd.print(counter);
+      delay(1000);
+      time2 = millis();
+      Serial.print(time2 - time1);
+    };
+    if ((gzRaw >=8000) && (gzRaw <= 10000))
+    {
+      counter++;
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("SUPER!! ");
+      lcd.print(counter);
+      delay(1000);
+      time2 = millis();
+      Serial.print(time2 - time1);
+    };
+    if ((gzRaw >10000))
+    {
+      counter++;
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.println("We need more str");
+      lcd.setCursor(0, 1);
+      lcd.print("ong people!! ");
+      lcd.print(counter);
+      delay(1000);
+      time2 = millis();
+      Serial.print(time2 - time1);
+    };
+    
+}
+    
